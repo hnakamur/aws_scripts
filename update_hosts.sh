@@ -17,3 +17,4 @@ tag_name=`ec2-describe-instances --region $region $instance_id | sed -n '/^TAG/{
 
 hostname $tag_name
 sed -i 's/^HOSTNAME=.*/HOSTNAME='$tag_name'/' /etc/sysconfig/network
+figlet $tag_name > /etc/motd

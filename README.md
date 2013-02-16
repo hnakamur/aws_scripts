@@ -8,3 +8,5 @@ edit it.
 
 install update_hosts.sh /usr/local/sbin/
 install cron.d.update_hosts /etc/cron.d/update_hosts
+
+yum --enablerepo=epel install -y figlet
