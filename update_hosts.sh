@@ -6,15 +6,14 @@ region=`ec2-metadata | sed -n 's/^local-hostname: ip-[0-9-]*\.\(.*\)\.compute\.i
 ec2-describe-instances --region $region -H --show-empty-fields | sed -n '1i\
 127.0.0.1\tlocalhost localhost.localdomain
 /^INSTANCE/{
-s/[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t//
-s/\t.*//
+s/^[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t\([^\t]*\).*/\1/
 h
 }
-/^TAG/{x;G;s/\n.*\tName//;s/^\([^\t]*\t[^\t]*\).*/\1/p}
+/^TAG/{x;G;s/^\([^\n]*\)\n.*\tName\t\([^\t]*\).*/\1\t\2/p}
 ' > /etc/hosts
 
 instance_id=`ec2-metadata | sed -n 's/^instance-id: //p'`
-tag_name=`ec2-describe-instances --region $region -H --show-empty-fields $instance_id | sed -n '/^TAG/{s/.*\tName\t//;s/\t.*//;p}'`
+tag_name=`ec2-describe-instances --region $region -H --show-empty-fields $instance_id | sed -n '/^TAG/{s/.*\tName\t\([^\t]*\).*/\1/p}'`
 
 hostname $tag_name
 sed -i 's/^HOSTNAME=.*/HOSTNAME='$tag_name'/' /etc/sysconfig/network
