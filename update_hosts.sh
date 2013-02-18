@@ -10,7 +10,7 @@ s/^[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]
 h
 }
 /^TAG/{x;G;s/^\([^\n]*\)\n.*\tName\t\([^\t]*\).*/\1\t\2/p}
-' > /etc/hosts
+' | sed '/^(nil)/d' > /etc/hosts
 
 instance_id=`ec2-metadata | sed -n 's/^instance-id: //p'`
 tag_name=`ec2-describe-instances --region $region $instance_id | sed -n '/^TAG/{s/.*\tName\t\([^\t]*\).*/\1/p}'`
